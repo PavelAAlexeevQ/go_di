@@ -10,16 +10,17 @@ import (
 func SetupDI() (container *dig.Container) {
 	container = dig.New()
 
-	var err error
-	/*err = container.Provide(func() interfaces.ILogger {
+	var err error = nil
+
+	err = container.Provide(func() interfaces.ILogger {
 		return implementations.ProvideLogger()
 	})
 	if err != nil {
 		panic(err)
-	}*/
+	}
 
 	err = container.Provide(func(logger interfaces.ILogger) interfaces.IHTTPServer {
-		return implementations.ProvideHTTPServer(logger)
+		return implementations.ProvideHTTPServer(logger, container)
 	})
 	if err != nil {
 		panic(err)

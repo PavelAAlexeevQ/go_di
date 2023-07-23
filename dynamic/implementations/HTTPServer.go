@@ -5,21 +5,35 @@ import (
 	"go_di/dynamic/interfaces"
 	"io"
 	"net/http"
+
+	"go.uber.org/dig"
 )
 
 type HTTPServer struct {
-	logger      interfaces.ILogger
-	calledCount int64
+	logger               interfaces.ILogger
+	helloCalledCount     int64
+	speedTestCalledCount int64
+	diContainer          *dig.Container
 }
 
 func (http *HTTPServer) HelloEndPoint(w http.ResponseWriter, r *http.Request) {
-	http.logger.Logf("called %v times\n", http.calledCount)
+	http.logger.Logf("called %v times\n", http.helloCalledCount)
 	io.WriteString(w, "Hello from DI\n")
-	http.calledCount++
+	http.helloCalledCount++
+}
+
+func (http *HTTPServer) SpeedTest(w http.ResponseWriter, r *http.Request) {
+	http.diContainer.Invoke(func(logger interfaces.ILogger) {
+		logger.Logf("called %v times\n", http.speedTestCalledCount)
+	})
+	io.WriteString(w, "Hello from DI\n")
+	http.speedTestCalledCount++
 }
 
 func (httpServer *HTTPServer) SetupHTTPServer() {
 	http.HandleFunc("/hello", httpServer.HelloEndPoint)
+
+	http.HandleFunc("/speedTest", httpServer.SpeedTest)
 
 	err := http.ListenAndServe(":8080", nil)
 
@@ -28,10 +42,11 @@ func (httpServer *HTTPServer) SetupHTTPServer() {
 	}
 }
 
-func ProvideHTTPServer(log interfaces.ILogger) interfaces.IHTTPServer {
-	fmt.Println("ProvideLogger()")
+func ProvideHTTPServer(log interfaces.ILogger, container *dig.Container) interfaces.IHTTPServer {
+	fmt.Println("ProvideHTTPServer()")
 	return &HTTPServer{
-		logger:      log,
-		calledCount: 0,
+		logger:               log,
+		speedTestCalledCount: 0,
+		diContainer:          container,
 	}
 }
