@@ -29,7 +29,6 @@ func SetupDI() (container *dig.Container) {
 }
 
 func main() {
-
 	container := SetupDI()
 
 	err := container.Invoke(func(httpServer interfaces.IHTTPServer) {
