@@ -26,13 +26,13 @@ func SetupDI() (container *dig.Container) {
 		panic(err)
 	}
 
-	/*err = container.Provide(func() interfaces.IPrefixFormatter {
+	err = container.Provide(func() interfaces.IPrefixFormatter {
 		return implementations.ProvidePrefixFormatterDateTime()
 	},
 		dig.Name("customizedPrefix"))
 	if err != nil {
 		panic(err)
-	}*/
+	}
 
 	err = container.Provide(func() interfaces.IPrefixFormatter {
 		return implementations.ProvidePrefixFormatterDefault()

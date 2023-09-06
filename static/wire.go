@@ -11,6 +11,6 @@ import (
 )
 
 func InitializeServer() *implementations.HTTPServer {
-	wire.Build(implementations.ProvideLogger, implementations.ProvideHTTPServer)
+	wire.Build(implementations.ProvideHTTPServer, implementations.ProvideLogger)
 	return &implementations.HTTPServer{}
 }
