@@ -12,8 +12,8 @@ func SetupDI() (container *dig.Container) {
 
 	var err error = nil
 
-	err = container.Provide(func() interfaces.ILogger {
-		return implementations.ProvideLogger()
+	err = container.Provide(func(additionalParams implementations.AdditionalParams) interfaces.ILogger {
+		return implementations.ProvideLogger(additionalParams)
 	})
 	if err != nil {
 		panic(err)
@@ -22,6 +22,23 @@ func SetupDI() (container *dig.Container) {
 	err = container.Provide(func(logger interfaces.ILogger) interfaces.IHTTPServer {
 		return implementations.ProvideHTTPServer(logger, container)
 	})
+	if err != nil {
+		panic(err)
+	}
+
+	/*err = container.Provide(func() interfaces.IPrefixFormatter {
+		return implementations.ProvidePrefixFormatterDateTime()
+	},
+		dig.Name("customizedPrefix"))
+	if err != nil {
+		panic(err)
+	}*/
+
+	err = container.Provide(func() interfaces.IPrefixFormatter {
+		return implementations.ProvidePrefixFormatterDefault()
+	},
+		dig.Name("defaultPrefix"))
+
 	if err != nil {
 		panic(err)
 	}
